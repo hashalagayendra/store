@@ -21,6 +21,8 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ec2-user/app || mkdir -p /home/ec2-user/app && cd /home/ec2-user/app
-            git pull origin main || git clone https://github.com/${{ github.repository }}.git .
+            git fetch origin main
+            git reset --hard origin/main
             docker compose down
-            docker compose up --build -d
+            docker compose build --no-cache
+            docker compose up -d
