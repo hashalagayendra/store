@@ -20,7 +20,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/ubuntu/app
-            git pull origin main
-            docker-compose down
-            docker-compose up --build -d
+            cd /home/ec2-user/app || mkdir -p /home/ec2-user/app && cd /home/ec2-user/app
+            git pull origin main || git clone https://github.com/${{ github.repository }}.git .
+            docker compose down
+            docker compose up --build -d
