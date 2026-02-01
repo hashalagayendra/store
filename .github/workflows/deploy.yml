@@ -13,36 +13,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup and Deploy to EC2
+      - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Install Docker if not installed
-            if ! command -v docker &> /dev/null; then
-              echo "Installing Docker..."
-              sudo apt update
-              sudo apt install -y docker.io docker-compose
-              sudo systemctl start docker
-              sudo systemctl enable docker
-              sudo usermod -aG docker ubuntu
-            fi
-            
-            # Create app directory if not exists
-            mkdir -p /home/ubuntu/app
             cd /home/ubuntu/app
-            
-            # Clone or pull repo
-            if [ ! -d ".git" ]; then
-              echo "Cloning repository..."
-              git clone https://github.com/hashalagayendra/OnlineStore.git .
-            else
-              echo "Pulling latest code..."
-              git pull origin main
-            fi
-            
-            # Run with docker-compose
-            sudo docker-compose down || true
-            sudo docker-compose up --build -d
+            git pull origin main
+            docker-compose down
+            docker-compose up --build -d
